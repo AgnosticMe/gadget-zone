@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # django apps
+    'accounts',
+
+    # external python packages
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +75,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'gadgetzone.wsgi.application'
+
+# using custom user model
+AUTH_USER_MODEL = 'accounts.Account'
 
 
 # Database
