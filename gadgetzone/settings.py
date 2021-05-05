@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # django apps
+    # project apps
     'accounts',
+    'category',
 
     # external python packages
     'phonenumber_field',
