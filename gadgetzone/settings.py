@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # project apps
     'accounts',
     'category',
+    'store',
 
     # external python packages
     'phonenumber_field',
