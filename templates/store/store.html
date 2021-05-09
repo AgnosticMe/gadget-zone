@@ -167,7 +167,11 @@
 						<span class="price">${{ product.price }}</span>
 					</div> <!-- price-wrap.// -->
 				</div>
-				<a href="{% url 'carts:add_to_cart' product.id %}" class="btn btn-block btn-primary">Add to cart</a>	
+				{% if in_cart %}
+					<a href="{% url 'carts:add_to_cart' product.id %}" class="btn btn-block btn-success disabled">Added to cart</a>	
+				{% else %}
+					<a href="{% url 'carts:add_to_cart' product.id %}" class="btn btn-block btn-primary">Add to cart</a>
+				{% endif %}
 			</figcaption>
 		</figure>
 	</div> <!-- col.// -->
