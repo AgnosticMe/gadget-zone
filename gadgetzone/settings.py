@@ -76,6 +76,7 @@ TEMPLATES = [
 
                 # making categories links available to all the template files
                 'category.context_processors.categories_links',
+                'carts.context_processors.cart_counter',
             ],
         },
     },
