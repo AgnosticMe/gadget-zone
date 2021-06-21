@@ -34,3 +34,23 @@ class ProductGallery(models.Model):
     class Meta:
         verbose_name = 'Product Gallery'
         verbose_name_plural = 'Product Gallery'
+
+
+
+variants_choices = (
+    ('color', 'color'),
+    ('size', 'size'),
+    ('style name', 'style name'),
+    ('pattern name', 'pattern name'),
+)
+
+class Variation(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variation_category = models.CharField(max_length=255, choices=variants_choices)
+    variation_value = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.product
