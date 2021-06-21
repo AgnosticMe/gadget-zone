@@ -36,6 +36,23 @@ class ProductGallery(models.Model):
         verbose_name_plural = 'Product Gallery'
 
 
+class VariationManager(models.Manager):
+    def all(self):
+        return super(VariationManager, self).filter(is_active=True)
+    
+    def color(self):
+        return self.all().filter(variation_category='color')
+    
+    def size(self):
+        return self.all().filter(variation_category='size')
+
+    def style_name(self):
+        return self.all().filter(variation_category='style name')
+
+    def pattern_name(self):
+        return self.all().filter(variation_category='pattern name')
+
+
 
 variants_choices = (
     ('color', 'color'),
@@ -51,6 +68,8 @@ class Variation(models.Model):
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    objects = VariationManager()
 
     def __unicode__(self):
         return self.product

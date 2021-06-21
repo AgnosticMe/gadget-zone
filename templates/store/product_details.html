@@ -38,6 +38,7 @@
 		<main class="col-md-6 border-left">
 
 <form action="{% url 'carts:add_to_cart' single_product.id %}" method="POST">
+{% csrf_token %}
 	<article class="content-body">
 
 	<h2 class="title">{{ single_product.product_name }}</h2>
@@ -50,28 +51,63 @@
 
 
 	<hr>
-		<div class="row">
-			<div class="item-option-select">
-				<h6>Choose Color</h6>
-					<select name="color"  class="form-control" required>
-						<option value="" disabled selected>--Choose Color--</option>
-					{% for option in single_product.variation_set.all %}
-						<option value="{{ option.variation_value }}">{{ option.variation_value | capfirst }}</option>
-					{% endfor %}
-					</select>
-			</div>
-		</div> <!-- row.// -->
-		<div class="row">
-			<div class="item-option-select">
-				<h6>Choose Size</h6>
-					<select name="color" class="form-control">
-						<option value="small">Small</option>
-						<option value="medium">Medium</option>
-						<option value="large">Large</option>
-					</select>
-			</div>
-		</div> <!-- row.// -->
-		<hr>
+		{% if single_product.variation_set.color %}
+			<div class="row">
+				<div class="item-option-select">
+					<h6>Choose Color</h6>
+						<select name="color"  class="form-control" required>
+							<option value="" disabled selected>--Select--</option>
+						{% for option in single_product.variation_set.color %}
+							<option value="{{ option.variation_value | lower }}">{{ option.variation_value | capfirst }}</option>
+						{% endfor %}
+						</select>
+				</div>
+			</div> <!-- row.// -->
+		{% endif %}
+
+		{% if single_product.variation_set.size %}
+			<div class="row">
+				<div class="item-option-select">
+					<h6>Size</h6>
+						<select name="size" class="form-control" required>
+							<option value="" disabled selected>--Select--</option>
+						{% for option in single_product.variation_set.size %}
+							<option value="{{ option.variation_value | lower }}">{{ option.variation_value | capfirst }}</option>
+						{% endfor %}
+						</select>
+				</div>
+			</div> <!-- row.// -->
+		{% endif %}
+
+
+		{% if single_product.variation_set.style_name %}
+			<div class="row">
+				<div class="item-option-select">
+					<h6>Style Name</h6>
+						<select name="style name" class="form-control" required>
+							<option value="" disabled selected>--Select--</option>
+						{% for option in single_product.variation_set.style_name %}
+							<option value="{{ option.variation_value | lower }}">{{ option.variation_value | capfirst }}</option>
+						{% endfor %}
+						</select>
+				</div>
+			</div> <!-- row.// -->
+		{% endif %}
+
+		{% if single_product.variation_set.pattern_name %}
+			<div class="row">
+				<div class="item-option-select">
+					<h6>Pattern Name</h6>
+						<select name="pattern name" class="form-control" required>
+							<option value="" disabled selected>--Select--</option>
+						{% for option in single_product.variation_set.pattern_name %}
+							<option value="{{ option.variation_value | lower }}">{{ option.variation_value | capfirst }}</option>
+						{% endfor %}
+						</select>
+				</div>
+			</div> <!-- row.// -->
+		{% endif %}
+	<hr>
 		
 		{% if single_product.stock <= 0 %}
 			<h5 class="text-danger">Out Of Stock</h5>
