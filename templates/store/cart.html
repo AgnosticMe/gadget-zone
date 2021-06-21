@@ -3,7 +3,7 @@
 
 <!-- ========================= TITLE========================= -->
 {% block title %}
-    <title>GreatKart | My Cart</title>
+    <title>GadgetZone | My Cart</title>
 {% endblock title %}
 <!-- ========================= TITLE-END//========================= -->
 
@@ -46,6 +46,14 @@
 			<div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
 			<figcaption class="info">
 				<a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a>
+				<p class="text-muted small">
+					{% if cart_item.variation.all %}
+						{% for item in cart_item.variation.all %}
+							{{ item.variation_category | capfirst}} : {{ item.variation_value | capfirst}} <br>
+						{% endfor %}
+					{% endif %}
+						
+				</p>
 			</figcaption>
 		</figure>
 	</td>
