@@ -15,6 +15,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
 
+from carts.models import Cart, CartItem
+from carts.views import _get_cart_id
+
 
 # Create your views here.
 def register(request):
@@ -63,6 +66,18 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
+            try:
+                cart = Cart.objects.get(cart_id=_get_cart_id(request))
+                cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
+            
             auth.login(request, user)
             messages.success(request, "Logged in Successfully")
             return redirect('accounts:dashboard')
@@ -72,7 +87,7 @@ def login(request):
 
     return render(request, 'accounts/login.html')
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def logout(request):
     auth.logout(request)
     messages.success(request, "Logged out Successfully")
@@ -96,7 +111,7 @@ def activate(request, uidb64, token):
         return redirect('accounts:register')
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
     

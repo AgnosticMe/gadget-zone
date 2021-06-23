@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect,get_object_or_404
 from .models import Cart, CartItem
 from store.models import Product, Variation
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 # method to get cart id based on session key
 def _get_cart_id(request):
     cart_id = request.session.session_key
-    if not cart:
+    if not cart_id:
         cart_id = request.session.create()
     return cart_id
 
@@ -120,7 +121,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
     return render(request, 'store/cart.html', context)
 
 
-
+@login_required(login_url='accounts:login')
 def checkout(request, total=0, quantity=0, cart_items=None):
     try:
         tax = 0
