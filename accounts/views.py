@@ -17,6 +17,7 @@ from django.http import HttpResponse
 
 from carts.models import Cart, CartItem
 from carts.views import _get_cart_id
+import requests
 
 
 # Create your views here.
@@ -105,7 +106,15 @@ def login(request):
             
             auth.login(request, user)
             messages.success(request, "Logged in Successfully")
-            return redirect('accounts:dashboard')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect('accounts:dashboard')
         else:
             messages.error(request, "Invalid login Credentials")
             return redirect('accounts:login')
