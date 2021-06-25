@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'category',
     'store',
     'carts',
+    'orders',
 
     # external python packages
     'phonenumber_field',
