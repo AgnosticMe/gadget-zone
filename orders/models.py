@@ -31,7 +31,6 @@ class Order(models.Model):
     last_name = models.CharField(max_length=50)
     phone_number = PhoneNumberField()
     email = models.EmailField(max_length=100)
-    first_name = models.CharField(max_length=50)
     address_line_1 = models.CharField(max_length=100)
     address_line_2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=50)
@@ -47,7 +46,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.first_name
+        return self.first_name
 
 
 class OrderItem(models.Model):
