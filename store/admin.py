@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, ProductGallery, Variation
+from .models import Product, ProductGallery, Variation, ReviewAndRating
 import admin_thumbnails
 
 @admin_thumbnails.thumbnail('image')
@@ -22,6 +22,12 @@ class VariationAdmin(admin.ModelAdmin):
     list_filter = ['product', 'variation_category', 'variation_value']
     ordering = ['-updated']
 
+
+@admin.register(ReviewAndRating)
+class ReviewAndRatingAdmin(admin.ModelAdmin):
+    list_display = ['subject', 'rating', 'product', 'user', 'status','created_at','updated_at'  ]
+    list_display_links = ['subject', 'rating', 'product']
+    list_filter = ['rating', 'status']
 
 
 admin.site.register(ProductGallery)
