@@ -108,7 +108,11 @@
 			<p class="text-center mb-3">
 				<img src="{% static './images/misc/payments.png' %}" height="26">
 			</p>
-			<a href="{% url 'carts:checkout' %}" class="btn btn-primary btn-block"> Make Payment </a>
+            <div id="paypal-button-container">
+                <!--PayPal Button will load-->
+
+            </div>
+
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
 
@@ -121,6 +125,85 @@
 
 </div> <!-- container .//  -->
 </section>
+
+    <!--PayPal Script-->
+    <script>
+        // CSRFToken
+        function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+        var amount = "{{ grand_total }}"
+        var payment_url = "{% url 'orders:payments' %}"
+        var csrftoken = getCookie('csrftoken');
+        var order_id = "{{ order.order_number }}"
+        var payment_method = 'PayPal'
+
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            style: {
+                color:  'blue',
+                shape:  'rect',
+                label:  'pay',
+                height: 40
+            },
+
+            // Set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: amount,
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    // Show a success message to the buyer
+
+                    // Send transaction data to the view
+                    console.log(details);
+                    sendPaymentData();
+                    function sendPaymentData(){
+                        fetch(payment_url, {
+                            method: 'POST',
+                            headers: {
+                                "Content-type": "application/json",
+                                'X-CSRFToken': csrftoken,
+                            },
+                            body: JSON.stringify({
+                                order_id: order_id,
+                                transaction_id: details.id,
+                                payment_method: payment_method,
+                                status: details.status,
+                            }),
+                        })
+                       
+                    }
+                    
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script><!--PayPal script.// -->
 
 
 {% endblock content %}

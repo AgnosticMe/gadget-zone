@@ -4,7 +4,7 @@ from .models import Payment, Order, OrderItem
 # Register your models here.
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['user', 'payment_method', 'amount_paid', 'status', 'created_at']
+    list_display = ['payment_id', 'user', 'payment_method', 'amount_paid', 'status', 'created_at']
     list_display_links = []
 
 
