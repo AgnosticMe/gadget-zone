@@ -127,17 +127,14 @@
 <div class="row">
 			<div class="col-md-9">
 
-	<header class="section-heading">
-		<h3>Customer Reviews </h3>  
-		
-	</header>
+	
 
-	<form action="{% url ''}" method="POST">
+	<form action="{% url 'store:submit_review' single_product.id %}" method="POST">
 	{% csrf_token %}
 		<h5 class="">Write Your Review</h5>
 		<div class="">
 			<!--Rating Stars-->
-			<label for="">How do you rate this product?</label>
+			<label for="">How do you rate this product?</label>	
 			<br>
 			<div class="rate">
 				<input type="radio" name="rating" id="rating10" value="5" required><label for="rating10" title="5"></label>
@@ -159,11 +156,23 @@
 			Review:
 			<textarea name="review" rows="5" class="form-control"></textarea>
 			<br>
-			<input type="submit" value="Submit Review" class="btn btn-primary">
+			
+			{% if user.is_authenticated %}
+				<input type="submit" value="Submit Review" class="btn btn-primary">	
+			{% else %}
+				<p>You must be logged in to post a review. <span class=""><a href="{% url 'accounts:login' %}">Login now</a></span</p>
+			{% endif %}
+				
 		</div>
+		<br>
+		{% include 'includes/alerts.html' %}
 
 	</form>
 	<br> 
+
+	<header class="section-heading">
+		<h3>Customer Reviews </h3>  
+	</header>
 
 	<article class="box mb-3">
 		<div class="icontext w-100">
