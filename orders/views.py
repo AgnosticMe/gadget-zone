@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import Order, Payment, OrderItem
 from carts.models import CartItem
 from .forms import OrderForm
@@ -69,9 +70,11 @@ def payments(request):
     send_email.send()
 
     # Send order number and transaction id back to sendPaymentData method via JsonResponse
-
-
-    return render(request, 'orders/payments.html')
+    paymentData = {
+        'order_number': order.order_number,
+        'transaction_id': payment.payment_id,
+    }
+    return JsonResponse(paymentData)
 
 
 # Create your views here.
@@ -143,4 +146,31 @@ def place_order(request, total=0, quantity=0):
         return redirect('carts:cart')
 
 
+def order_complete(request):
+    order_number = request.GET.get('order_number')
+    transaction_id = request.GET.get('payment_id')
 
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        order_items = OrderItem.objects.filter(order_id=order.id)
+
+        subtotal = 0
+        for i in order_items:
+            subtotal += i.product_price * i.quantity
+
+        payment = Payment.objects.get(payment_id=transaction_id)
+
+        context = {
+            'order': order,
+            'order_items': order_items,
+            'order_number': order.order_number,
+            'transaction_id': payment.payment_id,
+            'payment': payment,
+            'subtotal': subtotal,
+        }
+        return render(request, 'orders/order_complete.html', context)
+
+    except (Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect('home')
+
+    
