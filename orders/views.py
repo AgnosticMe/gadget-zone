@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Order, Payment
+from .models import Order, Payment, OrderItem
 from carts.models import CartItem
 from .forms import OrderForm
 
@@ -24,6 +24,30 @@ def payments(request):
     order.payment = payment
     order.is_ordered = True
     order.save()
+
+    # Move the cart items to order item table after the order
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    for item in cart_items:
+        order_item = OrderItem()
+        order_item.order_id = order.id
+        order_item.payment = payment
+        order_item.user_id = request.user.id
+        order_item.item_id = item.product_id
+        order_item.quantity = item.quantity
+        order_item.product_price = item.product.price
+        order_item.ordered = True
+        order_item.save()
+
+
+    # Reduce the quantity of sold products
+
+    # Clear the cart items
+
+    # Send order confirmed email to customer
+
+    # Send order number and transaction id back to sendPaymentData method via JsonResponse
+
 
     return render(request, 'orders/payments.html')
 
