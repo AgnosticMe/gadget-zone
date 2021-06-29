@@ -40,6 +40,10 @@ input:checked + lable:hover, input:checked ~ label:hover, input:checked ~ label:
     color: #cc9000;
 }
 
+/* Rating start color */
+.rating-star i{
+    color: #ffb503 !important;
+}
 
 /* showing product gallery */
 ul.thumb{

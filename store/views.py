@@ -7,6 +7,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from .forms import ReviewAndRatingForm
 from django.contrib import messages
+from orders.models import OrderItem
 
 # Create your views here.
 def store(request, category_slug=None):
@@ -45,13 +46,24 @@ def product_details(request, category_slug, product_slug):
     except Exception as e:
         raise e
 
+    # checking if user has purchsed a certain product
+    try:
+        order_item = OrderItem.objects.filter(user=request.user, item_id=single_product.id).exists()
+    except OrderItem.DoesNotExist:
+        order_item = None
+
+    # Get the reviews of products
+    reviews = ReviewAndRating.objects.filter(product_id=single_product.id, status=True)
+
     # get the product gallery  
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
 
     context = {
         'single_product': single_product,
         'in_cart': in_cart,
-        'product_gallery': product_gallery
+        'product_gallery': product_gallery,
+        'order_item': order_item,
+        'reviews': reviews,
     }
     return render(request, 'store/product_details.html', context)
 
