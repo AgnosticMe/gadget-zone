@@ -17,7 +17,7 @@ from django.http import HttpResponse
 
 from carts.models import Cart, CartItem
 from carts.views import _get_cart_id
-from orders.models import Order
+from orders.models import Order, OrderItem
 import requests
 
 
@@ -150,8 +150,11 @@ def activate(request, uidb64, token):
 def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     orders_count = orders.count()
+
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
     context = {
         'orders_count': orders_count,
+        'user_profile': user_profile,
     }
     return render(request, 'accounts/dashboard.html', context)
     
@@ -220,6 +223,7 @@ def reset_password(request):
         return render(request, 'accounts/reset_password.html')
 
 
+@login_required(login_url='accounts:login')
 def my_orders(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     context = {
@@ -248,4 +252,48 @@ def edit_profile(request):
         'user_profile': user_profile,
     }
     return render(request, 'accounts/edit_profile.html', context)
+
+
+@login_required(login_url='accounts:login')
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        cofirm_new_password = request.POST['confirm_new_password']
+
+        user = Account.objects.get(username__exact=request.user.username)
+
+        if new_password == cofirm_new_password:
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, "Password Updated Successfully!")
+                return redirect('accounts:change_password')
+            else:
+                messages.error(request, "Please enter a valid current password")
+                return redirect('accounts:change_password')
+        else:
+            messages.error(request, "Passwords don't match!")
+            return redirect('accounts:change_password')
+
+    return render(request, 'accounts/change_password.html')
+
+
+
+@login_required(login_url='accounts:login')
+def order_detail(request, order_id):
+    order_detail = OrderItem.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+
+    subtotal = 0
+    for i in order_detail:
+        subtotal += i.product_price * i.quantity
+
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'subtotal': subtotal,
+    }
+    return render(request, 'accounts/order_detail.html', context)
 
