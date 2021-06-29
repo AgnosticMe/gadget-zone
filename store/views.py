@@ -47,9 +47,12 @@ def product_details(request, category_slug, product_slug):
         raise e
 
     # checking if user has purchsed a certain product
-    try:
-        order_item = OrderItem.objects.filter(user=request.user, item_id=single_product.id).exists()
-    except OrderItem.DoesNotExist:
+    if request.user.is_authenticated:
+        try:
+            order_item = OrderItem.objects.filter(user=request.user, item_id=single_product.id).exists()
+        except OrderItem.DoesNotExist:
+            order_item = None
+    else:
         order_item = None
 
     # Get the reviews of products
