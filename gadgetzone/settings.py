@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # external python packages
     'phonenumber_field',
     'django_cleanup.apps.CleanupConfig',
+    'admin_honeypot',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +60,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # django session timeout
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',
 ]
+
+# session expire time
+SESSION_EXPIRE_SECONDS = 3600
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = 'accounts/login'
 
 ROOT_URLCONF = 'gadgetzone.urls'
 
@@ -122,15 +131,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config("LANGUAGE_CODE")
 
-TIME_ZONE = 'Asia/Calcutta'
+TIME_ZONE = config("TIME_ZONE")
 
-USE_I18N = True
+USE_I18N = config("USE_I18N", cast=bool)
 
-USE_L10N = True
+USE_L10N = config("USE_L10N", cast=bool)
 
-USE_TZ = True
+USE_TZ = config("USE_TZ", cast=bool)
 
 
 # Static files (CSS, JavaScript, Images)
@@ -159,8 +168,8 @@ MESSAGE_TAGS = {
 }
 
 # configuring SMTP
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = 'agnosticme4tw@gmail.com'
-EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
-EMAIL_USE_TLS = True
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", default=25, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default='localhost')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
